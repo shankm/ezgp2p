@@ -1,0 +1,26 @@
+# Local dictionary
+dict.txt
+
+#
+dependency-reduced-pom.xml
+
+# Locally downloaded javadocs
+javadoc/
+
+# target packages
+*target*
+
+# eclipse project files
+.project
+.metadata
+bin/**
+tmp/**
+tmp/**/*
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.classpath
+.settings/
+.loadpath
