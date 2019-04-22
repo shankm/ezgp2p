@@ -27,6 +27,7 @@ public class P2PTracker extends Thread {
 	public void run() {
 		try {
 			tracker = new Tracker(new InetSocketAddress(port));
+			System.out.println("Announce URL: " + tracker.getAnnounceUrl().toString());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

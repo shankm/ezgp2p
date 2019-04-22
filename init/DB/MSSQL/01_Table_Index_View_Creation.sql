@@ -241,7 +241,7 @@ CREATE TABLE tbITAGRecords (
 	IsValidForNonTollNonParking BIT,
 	DiscountPlanID SMALLINT,
 
-	CONSTRAINT PK_tbITAGRecords PRIMARY KEY (IAGFileID, TagAgencyID, TagNumber),
+	--CONSTRAINT PK_tbITAGRecords PRIMARY KEY (IAGFileID, TagAgencyID, TagNumber),
 	CONSTRAINT FK_tbITAGRecords_TagAgencyID_stbAgency FOREIGN KEY (TagAgencyID) REFERENCES stbAgency (AgencyID),
 	CONSTRAINT FK_tbITAGRecords_TagStatusID_stbTagStatusID FOREIGN KEY (TagStatusID) REFERENCES stbTagStatus (TagStatusID)
 )
@@ -253,7 +253,7 @@ GO
 ---------------------------------------------------------------------
 
 
-/* tbICLPREcords */
+/* tbICLPRecords */
 ---------------------------------------------------------------------
 CREATE TABLE tbICLPRecords (
 	IAGFileID INT,
@@ -263,7 +263,7 @@ CREATE TABLE tbICLPRecords (
 	LicensePlateStateAbbrev VARCHAR(2),
 	LicensePlateType VARCHAR(8),
 
-	CONSTRAINT PK_tbICLPRecords PRIMARY KEY (IAGFileID, LicensePlate, LicensePlateStateAbbrev, LicensePlateType, TagAgencyID, TagNumber),
+	--CONSTRAINT PK_tbICLPRecords PRIMARY KEY (IAGFileID, LicensePlate, LicensePlateStateAbbrev, LicensePlateType, TagAgencyID, TagNumber),
 	CONSTRAINT FK_tbICLPRecords_TagAgencyID_stbAgency FOREIGN KEY (TagAgencyID) REFERENCES stbAgency (AgencyID),
 	--CONSTRAINT FK_tbICLPREcords_LicensePlateStateAbbrev_stbState FOREIGN KEY (LicensePlateStateAbbrev) REFERENCES stbState (StateAbbrev)
 )
@@ -286,7 +286,7 @@ CREATE TABLE tbITGURecords (
 	IsValidForNonTollNonParking BIT,
 	DiscountPlanID SMALLINT,
 
-	CONSTRAINT PK_tbITGURecords PRIMARY KEY (IAGFileID, TagAgencyID, TagNumber),
+	--CONSTRAINT PK_tbITGURecords PRIMARY KEY (IAGFileID, TagAgencyID, TagNumber),
 	CONSTRAINT FK_tbITGURecords_AgencyID_stbAgency FOREIGN KEY (TagAgencyID) REFERENCES stbAgency (AgencyID),
 	CONSTRAINT FK_tbITGURecords_TagStatusID_stbTagStatusID FOREIGN KEY (TagStatusID) REFERENCES stbTagStatus (TagStatusID)
 )

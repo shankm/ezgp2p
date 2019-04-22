@@ -10,8 +10,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Properties;
 
 import co.mattshank.iagp2p_middle.objects.P2PFile;
+import co.mattshank.iagp2p_middle.objects.dbconnection.P2PDBConnectionFactory;
 import co.mattshank.iagp2p_middle.objects.dbconnection.P2PDBConnectionInterface;
-import co.mattshank.iagp2p_middle.objects.dbconnection.P2PDBConnectionManager;
 import co.mattshank.iagp2p_middle.objects.exceptions.UnsupportedFileTypeException;
 
 public class P2PFileManager {
@@ -24,13 +24,13 @@ public class P2PFileManager {
 	Properties properties;
 	String serverType, serverName, databaseName, username, password, connectionUrl;
 	int serverPort;
-	P2PDBConnectionManager connectionManager;
+	P2PDBConnectionFactory connectionManager;
 	P2PDBConnectionInterface connection;
 	
 	public P2PFileManager (Properties properties, File file) {
 		System.out.println();
 		System.out.println(dateFormatter.format(LocalDateTime.now()));
-		System.out.println("Loading " + file.getPath());
+		System.out.println("Loading " + file.getAbsolutePath());
 		
 		this.properties = properties;
 		
@@ -47,7 +47,7 @@ public class P2PFileManager {
 		System.out.print("Initializing DB connection... ");
 		System.out.flush();
 		try {
-			connectionManager = new P2PDBConnectionManager(properties);
+			connectionManager = new P2PDBConnectionFactory(properties);
 			connection = connectionManager.getConnection();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

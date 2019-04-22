@@ -16,32 +16,55 @@ import java.util.Properties;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-/**
+/*
  * 
- * @author Alexandre Jasmin (https://stackoverflow.com/questions/2032876/how-can-i-generate-a-torrent-in-java)
+ * Torrent building code by Alexandre Jasmin (https://stackoverflow.com/questions/2032876/how-can-i-generate-a-torrent-in-java)
  *
  */
 public class P2PTorrent {
-	File dataFile, sharedDataFile, torrentFile;
+	File sharedDataFile, torrentFile;
 
 	Properties properties;
 	
-	public P2PTorrent(Properties properties, File torrentFile) {
+	/**
+	 * Used in any scenario in which the torrent already exists
+	 * @param properties
+	 * @param torrentFile
+	 * @param isOutgoing
+	 */
+	public P2PTorrent(Properties properties, File torrentFile, boolean isOutgoing) {
 		this.properties = properties;
 		this.torrentFile = torrentFile;
-		this.dataFile = new File(properties.getProperty("home_file_archive_directory") + computeDataFileName(torrentFile.getName()));
-		this.sharedDataFile = new File(properties.getProperty("torrent_sharing_directory") + computeDataFileName(torrentFile.getName()));
+		
+		String key = isOutgoing ? "home_file_archive_directory" : "torrent_seeding_incoming_directory";
+		this.sharedDataFile = new File(properties.getProperty(key) + computeDataFileName(torrentFile.getName()));
 	}
 	
-	public P2PTorrent(Properties properties, File dataFile, File sharedDataFile, File torrentFile) {
+	/**
+	 * Used if we're going to be creating a torrent (outgoing) or don't know the torrent name
+	 * @param properties
+	 * @param sharedDataFile
+	 */
+	public P2PTorrent(Properties properties, File sharedDataFile) {
 		this.properties = properties;
-		this.dataFile = dataFile;
 		this.sharedDataFile = sharedDataFile;
-		this.torrentFile = torrentFile;
+		
+		File temp1 = new File(properties.getProperty("home_file_archive_directory") + sharedDataFile.getName());
+		File temp2 = new File(properties.getProperty("torrent_seeding_incoming_directory") + sharedDataFile.getName());
+		
+		if(sharedDataFile.getAbsolutePath().toString().equals(temp1.getAbsolutePath().toString()))
+			torrentFile = new File(properties.getProperty("home_file_archive_directory") + buildTorrentName(sharedDataFile.getName()));
+		else if (sharedDataFile.getAbsolutePath().toString().equals(temp2.getAbsolutePath().toString()))
+			torrentFile = new File(properties.getProperty("torrent_seeding_incoming_directory") + buildTorrentName(sharedDataFile.getName()));
+		else
+			torrentFile = null;
+		
+		if(torrentFile == null || !torrentFile.exists())
+			torrentFile = null;
 	}
 	
 	public void createTorrent() throws IOException {
-        File sharedFile = this.dataFile;
+        File sharedFile = this.sharedDataFile;
     	File torrentFile = new File(properties.getProperty("torrent_outgoing_directory") + buildTorrentName(sharedFile.getName()));
         String trackerIP = properties.getProperty("tracker_ip");
         int trackerPort = Integer.parseInt(properties.getProperty("tracker_port"));
@@ -65,8 +88,8 @@ public class P2PTorrent {
         this.torrentFile = torrentFile;
     }
    
-	public File getDataFile() {
-		return dataFile;
+	public File getSharedDataFile() {
+		return sharedDataFile;
 	}
 
 	public File getTorrentFile() {

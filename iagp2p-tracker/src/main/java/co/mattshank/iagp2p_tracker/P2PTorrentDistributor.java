@@ -31,7 +31,10 @@ public class P2PTorrentDistributor extends Thread {
 	ArrayList<File> torrentCollection;
 	final int torrentCollectionStaleSeconds;
 
-	public P2PTorrentDistributor(Properties properties) {
+	// DON'T CALL THIS CONSTRUCTOR
+	public P2PTorrentDistributor() {torrentCollectionStaleSeconds = Integer.MAX_VALUE;}
+	
+	public P2PTorrentDistributor(Properties properties) throws IOException {
 		this.properties = properties;
 		this.port = Integer.parseInt(properties.getProperty("torrent_distributor_port"));
 		this.torrentDirectoryPath = properties.getProperty("torrent_directory");
@@ -39,11 +42,7 @@ public class P2PTorrentDistributor extends Thread {
 		newTorrents = 0;
 		fetchTorrentFileCollection();
 		
-		try {
-			serverSocket = new ServerSocket(port);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		serverSocket = new ServerSocket(port);
 	}
 
     public void run() {
@@ -172,7 +171,10 @@ public class P2PTorrentDistributor extends Thread {
 	            	}
 	            	serverData.writeUTF("EOR");
 	            	serverData.flush();
-	            	System.out.println("SUCCESS: " + i + " files sent to " + clientSocket.toString());
+	            	if(i>0)
+	            		System.out.println("SUCCESS: " + i + " files sent to " + clientSocket. toString());
+	            	else
+	            		System.out.println("No new files to send to " + clientSocket.toString());
 	            }
 	            
 	            out.close();

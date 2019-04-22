@@ -21,8 +21,18 @@ public class P2PMiddleManager
     	Properties properties;
 		String configPath;
 		ArrayList<P2PFileManager> fileManagers = new ArrayList<P2PFileManager>();
+		
+		System.out.println("---------------------------------------------------------------");
+		System.out.println("\t   iagp2p-middle (v1.0)");
+		System.out.println("---------------------------------------------------------------");
+		System.out.println("\t  Developed by Matt Shank");
+		System.out.println("\twww.github.com/shankm/iagp2p");
+		System.out.println("\t GNU GENERAL PUBLIC LICENSE");
+		System.out.println("\t  Version 3, 29 June 2007");
+		System.out.println("---------------------------------------------------------------");
     	
-		configPath = "src/main/resources/middle.properties";
+		configPath = args.length > 0 ? args[0] : "src/main/resources/middle.properties";
+		System.out.println("properties: " + configPath + "\n");
 				
 		// Gather properties to use for duration of execution
 		List<String> requiredProperties = new ArrayList<String>();

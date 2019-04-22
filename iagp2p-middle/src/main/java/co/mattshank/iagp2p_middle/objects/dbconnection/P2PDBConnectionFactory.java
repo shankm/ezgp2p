@@ -4,13 +4,13 @@ import java.util.Properties;
 
 import co.mattshank.iagp2p_middle.objects.exceptions.UnsupportedDatabaseServerException;
 
-public class P2PDBConnectionManager {
+public class P2PDBConnectionFactory {
 	Properties properties;
 	String serverType, serverName, databaseName, username, password, tlsVersion, connectionUrl;
 	int serverPort, timeoutSeconds;
 	P2PDBConnectionInterface connection;
 
-	public P2PDBConnectionManager(Properties properties) throws Exception {
+	public P2PDBConnectionFactory(Properties properties) throws Exception {
 		this.properties = properties;
 		timeoutSeconds = Integer.parseInt(properties.getProperty("db_timeout_seconds"));
 		serverType = properties.getProperty("iag_db_server_type");

@@ -1,14 +1,18 @@
 # Local dictionary
 dict.txt
 
-#
+# shade
 dependency-reduced-pom.xml
+
+test_files/
+DB*/test/
 
 # Locally downloaded javadocs
 javadoc/
 
 # target packages
 *target*
+*.bat
 
 # eclipse project files
 .project

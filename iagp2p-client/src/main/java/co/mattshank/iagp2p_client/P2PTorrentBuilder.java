@@ -21,6 +21,7 @@ import java.util.Properties;
 import com.turn.ttorrent.common.protocol.TrackerMessage.AnnounceRequestMessage.RequestEvent;
 
 import co.mattshank.iagp2p_client.objects.P2PTorrent;
+import co.mattshank.iagp2p_client.objects.exceptions.CopyFileToSharedDataDirectoryException;
 
 public class P2PTorrentBuilder extends Thread {
 	private static final boolean runInfinitely = true;
@@ -130,20 +131,25 @@ public class P2PTorrentBuilder extends Thread {
 			}
 		}
 		
-		// Create torrents for valid files
-		File[] temp;
+		// Create torrents for valid data files
+		File temp;
 		for(File f : listOfFiles) {
-			temp = copyFileToSharedDataFiles(f);
+			temp = copyFileToArchive(f);
 			
-			/* if(temp[1] == null)
-					System.out.println("Bad copy"); */
-			
-			torrents.add(new P2PTorrent(properties, temp[0], temp[1], f));
-			
-			try {
-				torrents.get(torrents.size()-1).createTorrent();
-			} catch (Exception e) {
-				errors.put(f.getPath(), e);
+			if(temp != null) {
+				torrents.add(new P2PTorrent(properties, temp));
+				
+				try {
+					torrents.get(torrents.size()-1).createTorrent();
+					
+					// Delete the original file. We have a copy already in Archive
+					f.delete();
+				} catch (Exception e) {
+					errors.put(f.getName(), e);
+				}
+			}
+			else {
+				errors.put(f.getName(), new CopyFileToSharedDataDirectoryException());
 			}
 		}
 		
@@ -153,23 +159,21 @@ public class P2PTorrentBuilder extends Thread {
 			System.out.println("TORRENT BUILDER SUMMARY");
 			System.out.println("-----------------------------------------------------");
 			for(P2PTorrent t : torrents) {
-				System.out.print("- " + t.getDataFile().getName());
-				
+				System.out.print("- " + t.getSharedDataFile().getName());
 				
 				// Print results;
 				if(t.getTorrentFile() != null) {
-					moveFileToArchive(t.getDataFile());
 					System.out.println(" -> " + t.getTorrentFile().getName());
 				}
 				else {
-					System.out.println(": ERROR: " + errors.get(t.getDataFile().getPath().getClass().getSimpleName()));
+					System.out.println(": ERROR: " + errors.get(t.getSharedDataFile().getName()).getClass().getSimpleName());
 				}
 			}
 			System.out.println("-----------------------------------------------------");
 		}
 	}
 	
-	private static File[] sortFilesChronologically (File[] files) {
+	protected static File[] sortFilesChronologically (File[] files) {
     	File[] sortedFiles = files;
     	
     	Arrays.sort(sortedFiles, new Comparator<File>() {
@@ -180,50 +184,26 @@ public class P2PTorrentBuilder extends Thread {
     
     	return sortedFiles;
     }
+
 	
-	private boolean moveFileToArchive(File file) {
+	private File copyFileToArchive(File file) {
 		String destinationPath = properties.getProperty("home_file_archive_directory") + file.getName();
+		String tempDestinationPath = destinationPath + ".part";
+		File sharedDataFile = new File(destinationPath);
 		Path temp;
-		
-		if(moveFiles) {
-			if(destinationPath == null || destinationPath == "")
-				return false;
-			
-			try {
-				temp = Files.move(Paths.get(file.getPath()), Paths.get(destinationPath));
-			
-				if(temp != null)
-					return true;
-				else
-					return false;
-			} catch (Exception e) {
-				return false;
-			}
-		}
-		
-		return false;
-	}
-	
-	private File[] copyFileToSharedDataFiles(File file) {
-		String destinationPath = properties.getProperty("torrent_sharing_directory") + file.getName();
-		Path temp;
-		File[] oldAndNewFile = new File[2];
-		
-		oldAndNewFile[0] = file;
 		
 		if(destinationPath == null || destinationPath == "")
 			return null;
-			
-		oldAndNewFile[1] = new File(destinationPath);
-		if(oldAndNewFile[1].exists())
-			return oldAndNewFile;
+		
+		if(sharedDataFile.exists())
+			return sharedDataFile;
 		
 		try {
-			temp = Files.copy(Paths.get(file.getPath()), Paths.get(destinationPath), StandardCopyOption.REPLACE_EXISTING);
+			temp = Files.copy(Paths.get(file.getAbsolutePath()), Paths.get(tempDestinationPath), StandardCopyOption.REPLACE_EXISTING);
 		
 			if(temp != null) {
-				oldAndNewFile[1] = new File(destinationPath);
-				return oldAndNewFile;
+				new File(tempDestinationPath).renameTo(sharedDataFile);
+				return sharedDataFile;
 			}
 			else
 				return null;
@@ -240,7 +220,7 @@ public class P2PTorrentBuilder extends Thread {
 		
 		if(moveFiles) {
 			try {
-				temp = Files.move(Paths.get(file.getPath()), Paths.get(destinationPath));
+				temp = Files.move(Paths.get(file.getAbsolutePath()), Paths.get(destinationPath));
 				if(temp != null)
 					success = true;
 				else

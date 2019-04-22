@@ -52,8 +52,11 @@ GO
 ---------------------------------------------------------------------
 
 
-/* uspIAGFileLogGet */
+/* uspIAGFileLogCheckAlreadyLoaded */
 ---------------------------------------------------------------------
+IF OBJECT_ID('uspIAGFileLogCheckAlreadyLoaded') IS NOT NULL
+	DROP PROCEDURE uspIAGFileLogCheckAlreadyLoaded
+GO
 CREATE PROCEDURE uspIAGFileLogCheckAlreadyLoaded
 	@IAGFileName VARCHAR(250),
 	@FromAgencyID SMALLINT

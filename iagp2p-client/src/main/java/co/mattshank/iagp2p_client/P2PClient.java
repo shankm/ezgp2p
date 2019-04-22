@@ -35,6 +35,7 @@ public class P2PClient extends Thread {
 				System.exit(1); */
 		} catch (Exception e) {
 			e.printStackTrace();
+			System.exit(1);
 		}
 		
 		try {
